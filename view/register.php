@@ -2,11 +2,13 @@
 require_once('../model/authModel.php');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = $_POST['username'] ?? '';
-    $password = $_POST['password'] ?? '';
-    $email = $_POST['email'] ?? '';
-    $mobile = $_POST['mobile'] ?? '';
-    $address = $_POST['address'] ?? '';
+    $data = json_decode(file_get_contents('php://input'), true);
+
+    $username = $data['username'] ?? '';
+    $password = $data['password'] ?? '';
+    $email = $data['email'] ?? '';
+    $mobile = $data['mobile'] ?? '';
+    $address = $data['address'] ?? '';
     $errors = [];
 
     // Validation
@@ -21,14 +23,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $result = registerUser($username, $hashedPassword, $email, $mobile, $address);
 
         if ($result) {
-            header("Location: login.php");
-            exit;
+            echo json_encode(['success' => true, 'message' => 'Registration successful']);
         } else {
-            $errors[] = "Username already exists.";
+            echo json_encode(['success' => false, 'message' => 'Username already exists.']);
         }
+    } else {
+        echo json_encode(['success' => false, 'message' => $errors]);
     }
+
+    exit;
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -36,17 +42,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register</title>
     <link rel="stylesheet" href="../css/style.css">
+    <script src="../js/registerAjax.js"></script>
 </head>
 <body>
     <h1>Register</h1>
-    <?php if (!empty($errors)): ?>
-        <ul style="color: red;">
-            <?php foreach ($errors as $error): ?>
-                <li><?php echo $error; ?></li>
-            <?php endforeach; ?>
-        </ul>
-    <?php endif; ?>
-    <form method="POST" action="">
+    <form id="registerForm">
         <label for="username">Username:</label>
         <input type="text" id="username" name="username" required><br>
 
@@ -57,13 +57,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <input type="email" id="email" name="email" required><br>
 
         <label for="mobile">Mobile Number:</label>
-        <input type="text" id="mobile" name="mobile" maxlength="11" pattern="\d{11}" title="Must be 11 digits" required><br>
+        <input type="text" id="mobile" name="mobile" maxlength="11" required><br>
 
         <label for="address">Address:</label>
         <textarea id="address" name="address" required></textarea><br>
 
         <button type="submit">Register</button>
     </form>
-    <p><a href="login.php">Back to Login</a></p>
+    <p id="statusMessage"></p>
 </body>
 </html>

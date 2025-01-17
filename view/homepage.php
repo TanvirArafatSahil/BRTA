@@ -1,5 +1,7 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 // Check if the user is logged in
 if (!isset($_SESSION['username'])) {
@@ -9,6 +11,8 @@ if (!isset($_SESSION['username'])) {
 
 // Get the logged-in username
 $username = $_SESSION['username'];
+?>
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -20,22 +24,35 @@ $username = $_SESSION['username'];
 </head>
 <body>
     <header>
-        <h1>Welcome, <?php echo htmlspecialchars($username); ?>!</h1>
-        <nav>
-            <a href="../controller/logout.php">Logout</a>
-        </nav>
+        <div class="container">
+            <h1>Welcome, <?php echo htmlspecialchars($username); ?>!</h1>
+            <nav>
+                <ul>
+                    <li><a href="../controller/logout.php">Logout</a></li>
+                </ul>
+            </nav>
+        </div>
     </header>
 
     <main>
-        <h2>Available Services</h2>
-        <ul>
-            <li>
-                <a href="applyTaxToken.php">Apply for Tax Token</a>
-            </li>
-            <li>
-                <a href="vehicleReg.php">Apply for Vehicle Registration</a>
-            </li>
-        </ul>
+        <section class="services">
+            <h2>Available Services</h2>
+            <div class="service-card">
+                <h3>Apply for Vehicle Registration</h3>
+                <p>Register your vehicle quickly and securely online.</p>
+                <!-- Ensure this link redirects -->
+                <a href="vehicleReg.php" class="button">Get Started</a>
+            </div>
+            <div class="service-card">
+                <h3>Apply for Tax Token</h3>
+                <p>Easily apply for your vehicle tax token through our platform.</p>
+                <a href="applyTaxToken.php" class="button">Get Started</a>
+            </div>
+        </section>
     </main>
+
+    <footer>
+        <p>&copy; <?php echo date('Y'); ?> BRTA Services. All Rights Reserved.</p>
+    </footer>
 </body>
 </html>

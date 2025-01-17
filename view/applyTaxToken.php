@@ -18,7 +18,7 @@ if (!isset($_SESSION['username'])) {
     <header>
         <h1>Apply for Tax Token</h1>
         <nav>
-            <a href="homepage.php">Back to Homepage</a>
+            <a href="vehicleReg.php">Back to Homepage</a>
         </nav>
     </header>
     <main>

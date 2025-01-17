@@ -10,43 +10,42 @@ function saveVehicleRegistration($city, $vehicleClass, $series, $vehicleNumber) 
     return $result;
 }
 
-function authenticateUser($username, $password) {
-    echo "authenticateUser function called.<br>";
+function getUserByUsername($username) {
     $conn = getConnection();
-    if (!$conn) {
-        die("Database connection failed: " . mysqli_connect_error());
-    }
     $sql = "SELECT * FROM users WHERE username = ?";
     $stmt = mysqli_prepare($conn, $sql);
     mysqli_stmt_bind_param($stmt, 's', $username);
     mysqli_stmt_execute($stmt);
     $result = mysqli_stmt_get_result($stmt);
+    $user = mysqli_fetch_assoc($result);
+    mysqli_stmt_close($stmt);
+    mysqli_close($conn);
 
-    if ($row = mysqli_fetch_assoc($result)) {
-        echo "User found in database.<br>";
-        if (password_verify($password, $row['password'])) {
-            echo "Password verified successfully.<br>";
-            return true;
-        } else {
-            echo "Incorrect password.<br>";
-        }
-    } else {
-        echo "User not found in database.<br>";
-    }
-    return false;
+    return $user;
 }
 
 
 function registerUser($username, $password, $email, $mobile, $address) {
     $conn = getConnection();
-    $sql = "INSERT INTO users (username, password, email, mobile, address) VALUES (?, ?, ?, ?, ?)";
+    $sql = "INSERT INTO users (username, password, email, mobile, address, created_at) VALUES (?, ?, ?, ?, ?, NOW())";
     $stmt = mysqli_prepare($conn, $sql);
+
+    if (!$stmt) {
+        die("SQL Error: " . mysqli_error($conn)); // Debugging error
+    }
+
     mysqli_stmt_bind_param($stmt, 'sssss', $username, $password, $email, $mobile, $address);
     $result = mysqli_stmt_execute($stmt);
+
+    if (!$result) {
+        die("Execution Error: " . mysqli_stmt_error($stmt)); // Debugging error
+    }
+
     mysqli_stmt_close($stmt);
     mysqli_close($conn);
     return $result;
 }
+
 
 function getTaxTokenApplication($applicationID) {
     $conn = getConnection();
