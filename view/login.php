@@ -1,43 +1,49 @@
+<?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+session_start();
+require_once('../model/authModel.php');
+
+echo "Session started successfully.<br>";
+echo "authModel.php included successfully.<br>";
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    echo "Form submitted successfully.<br>";
+
+    // Retrieve POST data
+    $username = $_POST['username'] ?? '';
+    $password = $_POST['password'] ?? '';
+    echo "Username: $username<br>";
+    echo "Password: $password<br>";
+
+    if (authenticateUser($username, $password)) {
+        echo "User authenticated successfully.<br>";
+        $_SESSION['username'] = $username;
+        setcookie('logged_in', 'true', time() + 3600, '/'); // 1-hour session
+        header("Location: vehicleReg.php"); // Redirect to Vehicle Registration
+        exit;
+    } else {
+        echo "Invalid username or password.<br>";
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - BRTA</title>
-    <link rel="stylesheet" href="../assets/styles.css">
+    <title>Login</title>
 </head>
-
 <body>
-    <nav class="navbar">
-        <div class="container">
-            <ul class="nav-links">
-                <li><a href="../view/home.php" id="logo">BRTA</a></li>
-            </ul>
-        </div>
-    </nav>
-    <div class="form">
-        <div class="form-container login-container">
-            <h2>Login</h2>
-            <hr>
-            <form method="post" action="../controller/loginCheck.php">
-                <div class="form-group">
-                    <label for="username">Username</label>
-                    <input type="text" name="username" required>
-                </div>
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <input type="password" name="password" required>
-                </div>
-                <div class="form-group">
-                    <button type="submit" name="submit">Login</button>
-                </div>
-            </form>
-            <div class="switch">
-                <p>Don't have an account? <a href="register.php">Register here</a></p>
-            </div>
-        </div>
-    </div>
+    <h1>Login</h1>
+    <form method="POST" action="">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required><br>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required><br>
+        <button type="submit">Login</button>
+    </form>
 </body>
-
 </html>

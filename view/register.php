@@ -1,80 +1,69 @@
+<?php
+require_once('../model/authModel.php');
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $username = $_POST['username'] ?? '';
+    $password = $_POST['password'] ?? '';
+    $email = $_POST['email'] ?? '';
+    $mobile = $_POST['mobile'] ?? '';
+    $address = $_POST['address'] ?? '';
+    $errors = [];
+
+    // Validation
+    if (empty($username)) $errors[] = "Username is required.";
+    if (empty($password)) $errors[] = "Password is required.";
+    if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) $errors[] = "Valid email is required.";
+    if (empty($mobile) || !preg_match('/^\d{11}$/', $mobile)) $errors[] = "Mobile number must be 11 digits.";
+    if (empty($address)) $errors[] = "Address is required.";
+
+    if (empty($errors)) {
+        $hashedPassword = password_hash($password, PASSWORD_BCRYPT); // Secure password
+        $result = registerUser($username, $hashedPassword, $email, $mobile, $address);
+
+        if ($result) {
+            header("Location: login.php");
+            exit;
+        } else {
+            $errors[] = "Username already exists.";
+        }
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register - BRTA</title>
-    <link rel="stylesheet" href="../assets/styles.css">
+    <title>Register</title>
+    <link rel="stylesheet" href="../css/style.css">
 </head>
-
 <body>
-    <nav class="navbar">
-        <div class="container">
-            <ul class="nav-links">
-                <li><a href="../view/home.php" id="logo">BRTA</a></li>
-            </ul>
-        </div>
-    </nav>
-    <div class="form">
-        <div class="form-container register-container">
-            <h2>Register</h2>
-            <hr>
-            <form method="post" action="../controller/registerCheck.php">
-                <div class="row">
-                    <div class="form-group">
-                        <label for="name">Full Name</label>
-                        <input type="text" name="name" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="email">Email</label>
-                        <input type="email" name="email" required>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="form-group">
-                        <label for="reg-username">Username</label>
-                        <input type="text" name="username" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="reg-password">Password</label>
-                        <input type="password" name="password" required>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="form-group">
-                        <label for="age">Age</label>
-                        <input type="number" name="age" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="gender">Gender</label>
-                        <select name="gender" id="gender" required>
-                            <option name="gender" value="">Select</option>
-                            <option name="gender" value="male">Male</option>
-                            <option name="gender" value="female">Female</option>
-                            <option name="gender" value="other">Other</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="form-group">
-                        <label for="dob">Date of Birth</label>
-                        <input type="date" name="dob" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="address">Address</label>
-                        <input type="text" name="address" required>
-                    </div>
-                </div>
+    <h1>Register</h1>
+    <?php if (!empty($errors)): ?>
+        <ul style="color: red;">
+            <?php foreach ($errors as $error): ?>
+                <li><?php echo $error; ?></li>
+            <?php endforeach; ?>
+        </ul>
+    <?php endif; ?>
+    <form method="POST" action="">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required><br>
 
-                <div class="form-group">
-                    <button name="submit" type="submit">Register</button>
-                </div>
-            </form>
-            <div class="switch">
-                <p>Already have an account? <a href="login.php">Login here</a></p>
-            </div>
-        </div>
-    </div>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required><br>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required><br>
+
+        <label for="mobile">Mobile Number:</label>
+        <input type="text" id="mobile" name="mobile" maxlength="11" pattern="\d{11}" title="Must be 11 digits" required><br>
+
+        <label for="address">Address:</label>
+        <textarea id="address" name="address" required></textarea><br>
+
+        <button type="submit">Register</button>
+    </form>
+    <p><a href="login.php">Back to Login</a></p>
 </body>
 </html>
