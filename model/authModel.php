@@ -118,6 +118,38 @@ function saveTaxTokenApplication($permitType, $regNumber, $chassisNumber, $fullN
     }
 }
 
+function getAllVehicleRegistrations() {
+    $conn = getConnection(); // Assuming getConnection() is already defined
+    $sql = "SELECT * FROM vehicle_registration ORDER BY created_at DESC";
+    $result = mysqli_query($conn, $sql);
+
+    $data = [];
+    if ($result && mysqli_num_rows($result) > 0) {
+        while ($row = mysqli_fetch_assoc($result)) {
+            $data[] = $row;
+        }
+    }
+
+    mysqli_close($conn);
+    return $data;
+}
+
+function getAllTaxTokens() {
+    $conn = getConnection(); // Assuming getConnection() is already defined
+    $sql = "SELECT * FROM tax_tokens ORDER BY created_at DESC";
+    $result = mysqli_query($conn, $sql);
+
+    $data = [];
+    if ($result && mysqli_num_rows($result) > 0) {
+        while ($row = mysqli_fetch_assoc($result)) {
+            $data[] = $row;
+        }
+    }
+
+    mysqli_close($conn);
+    return $data;
+}
+
 
 
 ?>
